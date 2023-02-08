@@ -3,29 +3,83 @@
 #include<bqnffi.h>
 
 #define R return
-#define PO PyObject*
 #define C case
 #define BR break;
+#define Sw switch
+
+typedef int I;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;typedef long J;
 
 #define ERR(str) PyErr_SetString(PyExc_RuntimeError, str);
-#define DO(i,n,a) {int i;for(i=0;i<n;i++){a;}}
+#define DO(i,n,a) {I i;for(i=0;i<n;i++){a;}}
 
 BQNV bqn_npy(PO o) {
+    if(PyFloat_Check(o)){
+        F x=PyFloat_AsDouble(o);
+        R bqn_makeF64(x);
+    }
+    if(PyLong_Check(o)){
+        ERR("Integer arguments are not supported.")
+        R NULL;
+    }
+    if(PyUnicode_Check(o)){
+        S l=PyUnicode_GET_LENGTH(o);
+        I k=PyUnicode_KIND(o);
+        BQNV res;
+        Sw(k){
+            C PyUnicode_1BYTE_KIND:
+                uint8_t* s8=PyUnicode_1BYTE_DATA(o);
+                res=bqn_makeC8Vec(l,s8);
+                BR
+            C PyUnicode_2BYTE_KIND:
+                uint16_t* s16=PyUnicode_2BYTE_DATA(o);
+                res=bqn_makeC16Vec(l,s16);
+                BR
+            C PyUnicode_4BYTE_KIND:
+                uint32_t* s32=PyUnicode_4BYTE_DATA(o);
+                res=bqn_makeC32Vec(l,s32);
+                BR
+            default:
+                ERR("???") BR
+        };
+        R res;
+    }
+    I t=PyArray_TYPE(o);
+    I rnk=PyArray_NDIM(o);
+    S srnk=(S)rnk;
+    npy_intp* dims=PyArray_DIMS(o);
+    S* bqndims=malloc(sizeof(S)*rnk);
+    DO(i,rnk,bqndims[i]=(S)dims[i]);free(dims);
+    U data=PyArray_DATA(o);
+    BQNV res;
+    Sw(t) {
+        C NPY_BYTE:
+            res=bqn_makeI8Arr(srnk,bqndims,data);BR
+        C NPY_SHORT:
+            res=bqn_makeI16Arr(srnk,bqndims,data);BR
+        C NPY_INT:
+            res=bqn_makeI32Arr(srnk,bqndims,data);BR
+        C NPY_DOUBLE:
+            res=bqn_makeF64Arr(srnk,bqndims,data);BR
+        default:
+            ERR("Type not supported. 🤷")BR
+    }
+    free(bqndims);
+    R res;
 }
 
 PO npy_bqn(BQNV x) {
     if(bqn_type(x)==1){
         R PyFloat_FromDouble(bqn_toF64(x));
     }
-    size_t rnk=bqn_rank(x);
-    long* dims=malloc(sizeof(long)*rnk);
-    size_t* bqndims=malloc(sizeof(size_t)*rnk);
+    S rnk=bqn_rank(x);
+    J* dims=malloc(sizeof(J)*rnk);
+    S* bqndims=malloc(sizeof(S)*rnk);
     bqn_shape(x,bqndims);
-    DO(i,rnk,dims[i]=(long)bqndims[i]);free(bqndims);
-    size_t n=bqn_bound(x);
+    DO(i,rnk,dims[i]=(J)bqndims[i]);free(bqndims);
+    S n=bqn_bound(x);
     BQNElType t=bqn_directArrType(x);
     PO res;
-    switch(t) {
+    Sw(t) {
         C elt_i8:
             int8_t* data8=malloc(n);
             bqn_readI8Arr(x,data8);
@@ -38,6 +92,10 @@ PO npy_bqn(BQNV x) {
             int32_t* data32=malloc(n*4);
             bqn_readI32Arr(x,data32);
             res=PyArray_SimpleNewFromData(rnk,dims,NPY_INT32,data32);BR
+        C elt_f64:
+            F* datad=malloc(n*8);
+            bqn_readF64Arr(x,datad);
+            res=PyArray_SimpleNewFromData(rnk,dims,NPY_DOUBLE,datad);BR
         default:
             ERR("Return type not supported.")BR
     }
@@ -54,7 +112,21 @@ static PO bqn_bqn(PO self, PO args) {
         bqn_free(f);
         R res;
     };
-    ERR("Expected nilad, monad, or dyad.")
+    if(arg1==NULL){
+        BQNV x0=bqn_npy(arg0);
+        BQNV bqnres=bqn_call1(f,x0);
+        PO res=npy_bqn(bqnres);
+        bqn_free(x0);bqn_free(bqnres);bqn_free(f);
+        R res;
+    }
+    else{
+        BQNV x0=bqn_npy(arg0);
+        BQNV x1=bqn_npy(arg1);
+        BQNV bqnres=bqn_call2(f,x0,x1);
+        PO res=npy_bqn(bqnres);
+        bqn_free(x0);bqn_free(x1);bqn_free(bqnres);bqn_free(f);
+        R res;
+    }
 }
 
 static PyMethodDef BqnMethods[] = {
