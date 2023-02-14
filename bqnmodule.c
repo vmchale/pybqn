@@ -25,17 +25,18 @@ BQNV bqn_npy(PO o) {
         S l=PyUnicode_GET_LENGTH(o);
         I k=PyUnicode_KIND(o);
         BQNV res;
+        uint8_t* s8;uint16_t* s16;uint32_t* s32;
         Sw(k){
             C PyUnicode_1BYTE_KIND:
-                uint8_t* s8=PyUnicode_1BYTE_DATA(o);
+                s8=PyUnicode_1BYTE_DATA(o);
                 res=bqn_makeC8Vec(l,s8);
                 BR
             C PyUnicode_2BYTE_KIND:
-                uint16_t* s16=PyUnicode_2BYTE_DATA(o);
+                s16=PyUnicode_2BYTE_DATA(o);
                 res=bqn_makeC16Vec(l,s16);
                 BR
             C PyUnicode_4BYTE_KIND:
-                uint32_t* s32=PyUnicode_4BYTE_DATA(o);
+                s32=PyUnicode_4BYTE_DATA(o);
                 res=bqn_makeC32Vec(l,s32);
                 BR
             default:
@@ -79,21 +80,22 @@ PO npy_bqn(BQNV x) {
     S n=bqn_bound(x);
     BQNElType t=bqn_directArrType(x);
     PO res;
+    int8_t* data8;int16_t* data16;int32_t* data32;F* datad;
     Sw(t) {
         C elt_i8:
-            int8_t* data8=malloc(n);
+            data8=malloc(n);
             bqn_readI8Arr(x,data8);
             res=PyArray_SimpleNewFromData(rnk,dims,NPY_INT8,data8);BR
         C elt_i16:
-            int16_t* data16=malloc(n*2);
+            data16=malloc(n*2);
             bqn_readI16Arr(x,data16);
             res=PyArray_SimpleNewFromData(rnk,dims,NPY_INT16,data16);BR
         C elt_i32:
-            int32_t* data32=malloc(n*4);
+            data32=malloc(n*4);
             bqn_readI32Arr(x,data32);
             res=PyArray_SimpleNewFromData(rnk,dims,NPY_INT32,data32);BR
         C elt_f64:
-            F* datad=malloc(n*8);
+            datad=malloc(n*8);
             bqn_readF64Arr(x,datad);
             res=PyArray_SimpleNewFromData(rnk,dims,NPY_DOUBLE,datad);BR
         default:
