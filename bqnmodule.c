@@ -102,6 +102,7 @@ PO npy_bqn(BQNV x) {
             ERR("Return type not supported.")BR
     }
     free(dims);
+    PyArray_ENABLEFLAGS((PyArrayObject*)res,NPY_ARRAY_OWNDATA);
     R res;
 }
 
