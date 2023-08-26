@@ -8,6 +8,7 @@ bqn.o: bqnmodule.c
 
 bqn.so: bqn.o
 	gcc -shared $^ -o $@ -lcbqn
+	strip $@
 
 clean:
 	rm -rf *.o *.so
