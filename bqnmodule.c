@@ -137,6 +137,6 @@ static PyMethodDef BqnMethods[] = {
     {NULL,NULL,0,NULL}
 };
 
-static struct PyModuleDef bqnmodule = { PyModuleDef_HEAD_INIT, "bqn", NULL, -1, BqnMethods };
+static struct PyModuleDef bqnmodule = {PyModuleDef_HEAD_INIT, "bqn", NULL, -1, BqnMethods};
 
-PyMODINIT_FUNC PyInit_bqn(void) { bqn_init(); import_array(); R PyModule_Create(&bqnmodule); }
+PyMODINIT_FUNC PyInit_bqn(void) {bqn_init(); import_array(); R PyModule_Create(&bqnmodule);}
