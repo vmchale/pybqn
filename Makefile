@@ -1,4 +1,4 @@
-PY_VER := 3.11
+PY_VER := 3.12
 
 all: bqn.so
 
