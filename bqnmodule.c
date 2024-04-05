@@ -21,7 +21,7 @@ BQNV bqn_npy(PO o) {
     }
     if(PyLong_Check(o)){
         ERR("Integer arguments are not supported.")
-        R NULL;
+        R 0;
     }
     if(PyUnicode_Check(o)){
         S l=PyUnicode_GET_LENGTH(o);
