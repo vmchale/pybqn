@@ -7,7 +7,9 @@
 #define BR break;
 #define Sw switch
 
-typedef int I;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;typedef long J;
+#undef I
+
+typedef int I;typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;typedef long J;
 
 #define ERR(str) PyErr_SetString(PyExc_RuntimeError, str);
 #define DO(i,n,a) {I i;for(i=0;i<n;i++){a;}}
@@ -44,13 +46,14 @@ BQNV bqn_npy(PO o) {
         };
         R res;
     }
-    I t=PyArray_TYPE(o);
-    I rnk=PyArray_NDIM(o);
+    NPA a=(NPA)o;
+    I t=PyArray_TYPE(a);
+    I rnk=PyArray_NDIM(a);
     S srnk=(S)rnk;
-    npy_intp* dims=PyArray_DIMS(o);
+    npy_intp* dims=PyArray_DIMS(a);
     S* bqndims=malloc(sizeof(S)*rnk);
     DO(i,rnk,bqndims[i]=(S)dims[i]);free(dims);
-    U data=PyArray_DATA(o);
+    U data=PyArray_DATA(a);
     BQNV res;
     Sw(t) {
         C NPY_BYTE:
