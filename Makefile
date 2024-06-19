@@ -8,7 +8,7 @@ install: bqn.so
 bqn.o: bqnmodule.c
 	$(CC) -fPIC -O2 -c $< \
 		-I /Library/Frameworks/Python.framework/Versions/$(PY_VER)/include/python$(PY_VER) \
-		-I /Library/Frameworks/Python.framework/Versions/$(PY_VER)/lib/python$(PY_VER)/site-packages/numpy/core/include -o $@
+		-I /Library/Frameworks/Python.framework/Versions/$(PY_VER)/lib/python$(PY_VER)/site-packages/numpy/_core/include -o $@
 
 bqn.so: bqn.o
 	$(CC) -shared $^ -o $@ -lcbqn -rpath /usr/local/lib /Library/Frameworks/Python.framework/Versions/$(PY_VER)/Python
