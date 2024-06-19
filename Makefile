@@ -5,7 +5,7 @@ install: bqn.so
 
 bqn.o: bqnmodule.c
 	$(CC) -fPIC -O2 -c $< \
-		-I "$$(python3 -m site --user-site)/numpy/core/include" \
+		-I "$$(python3 -m site --user-site)/numpy/_core/include" \
 		-I /usr/local/include/python3.12 -o $@
 
 bqn.so: bqn.o
