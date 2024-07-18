@@ -17,8 +17,6 @@ Install the BQN C library, `libcbqn.so`, and headers on your system. Then:
 make install
 ```
 
-See the [mac branch](https://github.com/vmchale/pybqn/tree/mac) for Mac.
-
 ## Limitations
 
 - Only supports integer and floating-point types.
