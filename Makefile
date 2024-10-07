@@ -19,7 +19,7 @@ all: bqn.so
 install: bqn.so
 	cp $^ $$(python3 -m site --user-site)
 
-bqn.o: bqnmodule.c
+%.o: %.c
 	$(CC) -fPIC -O2 -c $< $(CFLAGS) -o $@
 
 bqn.so: bqn.o
