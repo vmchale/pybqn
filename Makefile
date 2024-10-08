@@ -1,6 +1,6 @@
 UNAME:=$(shell uname)
 
-PY_VER := 3.12
+PY_VER := $(shell python3 --version | rg '(\d+\.\d+)\.\d+' -o -r '$$1')
 
 ifeq ($(UNAME),Darwin)
 	CFLAGS := -I /Library/Frameworks/Python.framework/Versions/$(PY_VER)/include/python$(PY_VER) \
