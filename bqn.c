@@ -56,16 +56,11 @@ BQNV bqn_npy(PO o) {
     U data=PyArray_DATA(a);
     BQNV res;
     Sw(t) {
-        C NPY_BYTE:
-            res=bqn_makeI8Arr(srnk,bqndims,data);BR
-        C NPY_SHORT:
-            res=bqn_makeI16Arr(srnk,bqndims,data);BR
-        C NPY_INT:
-            res=bqn_makeI32Arr(srnk,bqndims,data);BR
-        C NPY_DOUBLE:
-            res=bqn_makeF64Arr(srnk,bqndims,data);BR
-        default:
-            ERR("Type not supported. 🤷")BR
+        C NPY_BYTE: res=bqn_makeI8Arr(srnk,bqndims,data);BR
+        C NPY_SHORT: res=bqn_makeI16Arr(srnk,bqndims,data);BR
+        C NPY_INT: res=bqn_makeI32Arr(srnk,bqndims,data);BR
+        C NPY_DOUBLE: res=bqn_makeF64Arr(srnk,bqndims,data);BR
+        default: ERR("Type not supported. 🤷")BR
     }
     free(bqndims);
     R res;
@@ -101,11 +96,10 @@ PO npy_bqn(BQNV x) {
             datad=malloc(n*8);
             bqn_readF64Arr(x,datad);
             res=PyArray_SimpleNewFromData(rnk,dims,NPY_DOUBLE,datad);BR
-        default:
-            ERR("Return type not supported.")BR
+        default: ERR("Return type not supported.")BR
     }
     free(dims);
-    PyArray_ENABLEFLAGS((PyArrayObject*)res,NPY_ARRAY_OWNDATA);
+    PyArray_ENABLEFLAGS((NPA)res,NPY_ARRAY_OWNDATA);
     R res;
 }
 
