@@ -76,10 +76,10 @@ PO npy_bqn(BQNV x) {
         R PyFloat_FromDouble(bqn_toF64(x));
     }
     S rnk=bqn_rank(x);
-    J* dims=malloc(sizeof(J)*rnk);
+    npy_intp* dims=malloc(sizeof(npy_intp)*rnk);
     S* bqndims=malloc(sizeof(S)*rnk);
     bqn_shape(x,bqndims);
-    DO(i,rnk,dims[i]=(J)bqndims[i]);free(bqndims);
+    DO(i,rnk,dims[i]=(npy_intp)bqndims[i]);free(bqndims);
     S n=bqn_bound(x);
     BQNElType t=bqn_directArrType(x);
     PO res;
