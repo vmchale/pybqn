@@ -6,6 +6,8 @@
 #define C case
 #define BR break;
 #define Sw switch
+#define _ static inline
+#define K const
 
 #undef I
 
@@ -14,7 +16,7 @@ typedef int I;typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;ty
 #define ERR(str) PyErr_SetString(PyExc_RuntimeError, str);
 #define DO(i,n,a) {I i;for(i=0;i<n;i++){a;}}
 
-BQNV bqn_npy(PO o) {
+_ BQNV bqn_npy(K PO o) {
     if(PyFloat_Check(o)){
         F x=PyFloat_AsDouble(o);
         R bqn_makeF64(x);
@@ -66,7 +68,7 @@ BQNV bqn_npy(PO o) {
     R res;
 }
 
-PO npy_bqn(BQNV x) {
+_ PO npy_bqn(K BQNV x) {
     if(bqn_type(x)==1){
         R PyFloat_FromDouble(bqn_toF64(x));
     }
@@ -103,19 +105,19 @@ PO npy_bqn(BQNV x) {
     R res;
 }
 
-static PO bqn_bqn(PO self, PO args) {
+static PO bqn_bqn(K PO self, K PO args) {
     const char* inp;PO arg0=NULL;PO arg1=NULL;
     PyArg_ParseTuple(args, "s|OO", &inp, &arg0, &arg1);
     BQNV f=bqn_evalCStr(inp);
     if(arg0==NULL){
-        PO res=npy_bqn(f);
+        K PO res=npy_bqn(f);
         bqn_free(f);
         R res;
     };
     if(arg1==NULL){
         BQNV x0=bqn_npy(arg0);
         BQNV bqnres=bqn_call1(f,x0);
-        PO res=npy_bqn(bqnres);
+        K PO res=npy_bqn(bqnres);
         bqn_free(x0);bqn_free(bqnres);bqn_free(f);
         R res;
     }
@@ -123,7 +125,7 @@ static PO bqn_bqn(PO self, PO args) {
         BQNV x0=bqn_npy(arg0);
         BQNV x1=bqn_npy(arg1);
         BQNV bqnres=bqn_call2(f,x0,x1);
-        PO res=npy_bqn(bqnres);
+        K PO res=npy_bqn(bqnres);
         bqn_free(x0);bqn_free(x1);bqn_free(bqnres);bqn_free(f);
         R res;
     }
