@@ -1,3 +1,5 @@
 *.so
 *.o
 tags
+*.egg-info
+dist

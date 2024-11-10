@@ -26,4 +26,4 @@ bqn.so: bqn.o
 	$(CC) -shared $^ -o $@ -lcbqn $(LDFLAGS)
 
 clean:
-	rm -rf *.o *.so
+	rm -rf *.o *.so dist *.egg-info

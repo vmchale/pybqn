@@ -1,0 +1,13 @@
+# https://setuptools.pypa.io/en/stable/userguide/ext_modules.html
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pybqn"
+version = "0.1.0"
+dependencies = ["numpy>=2.0"]
+
+[tool.setuptools]
+ext-modules = [{name = "bqn", sources = ["bqn.c"], extra-link-args = ["-lcbqn"], runtime-library-dirs = ["/usr/lib/local"]}]
