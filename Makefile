@@ -27,3 +27,6 @@ bqn.so: bqn.o
 
 clean:
 	rm -rf *.o *.so dist *.egg-info
+
+dist/pybqn-0.1.0.tar.gz: bqn.c pyproject.toml setup.py
+	python3 -m build
