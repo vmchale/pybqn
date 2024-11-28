@@ -11,7 +11,7 @@ array([3, 4, 5, 6], dtype=int8)
 
 ## Installation
 
-Install the BQN C library, `libcbqn.so`, and headers on your system. Then:
+Install the BQN C library, `libcbqn.so` (`libcbqn.dylib` on Mac) to `/usr/local/lib`, and headers. Then:
 
 ```
 make install
