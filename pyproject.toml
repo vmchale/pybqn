@@ -7,4 +7,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pybqn"
 version = "0.1.0"
+authors = [{ name = "Vanessa McHale", email = "vamchale@gmail.com" }]
+readme = "README.md"
+license = {file = "LICENSE"}
 dependencies = ["numpy>=2.0"]
+
+[project.urls]
+CBQN = "https://github.com/dzaima/CBQN"
