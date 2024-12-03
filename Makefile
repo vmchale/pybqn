@@ -1,32 +1,10 @@
-UNAME:=$(shell uname)
-
-PY_VER := $(shell python3 --version | rg '(\d+\.\d+)\.\d+' -o -r '$$1')
-
-ifeq ($(UNAME),Darwin)
-	CFLAGS := -I /Library/Frameworks/Python.framework/Versions/$(PY_VER)/include/python$(PY_VER) \
-		  -I /Library/Frameworks/Python.framework/Versions/$(PY_VER)/lib/python$(PY_VER)/site-packages/numpy/_core/include
-else
-	CFLAGS := -I "$$(python3 -m site --user-site)/numpy/_core/include" \
-		  -I /usr/local/include/python$(PY_VER)
-endif
-
-ifeq ($(UNAME),Darwin)
-	LDFLAGS := -rpath /usr/local/lib /Library/Frameworks/Python.framework/Versions/$(PY_VER)/Python
-endif
-
-all: bqn.so
-
-install: bqn.so
-	cp $^ $$(python3 -m site --user-site)
-
-%.o: %.c
-	$(CC) -fPIC -O2 -c $< $(CFLAGS) -o $@
-
-bqn.so: bqn.o
-	$(CC) -shared $^ -o $@ -lcbqn $(LDFLAGS)
-
-clean:
-	rm -rf *.o *.so dist *.egg-info
+.PHONY: clean
 
 dist/pybqn-0.1.0.tar.gz: bqn.c pyproject.toml setup.py
 	python3 -m build
+
+install: dist/pybqn-0.1.0.tar.gz
+	python3 -m pip install $<
+
+clean:
+	rm -rf dist *.egg-info
