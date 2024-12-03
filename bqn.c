@@ -9,12 +9,10 @@
 #define _ static inline
 #define K const
 
-#undef I
-
-typedef int I;typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;typedef long J;
+typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;typedef long J;
 
 #define ERR(str) PyErr_SetString(PyExc_RuntimeError, str);
-#define DO(i,n,a) {I i;for(i=0;i<n;i++){a;}}
+#define DO(i,n,a) {int i;for(i=0;i<n;i++){a;}}
 
 _ BQNV bqn_npy(K PO o) {
     if(PyFloat_Check(o)){
@@ -27,7 +25,7 @@ _ BQNV bqn_npy(K PO o) {
     }
     if(PyUnicode_Check(o)){
         S l=PyUnicode_GET_LENGTH(o);
-        I k=PyUnicode_KIND(o);
+        int k=PyUnicode_KIND(o);
         BQNV res;
         Sw(k){
             C(PyUnicode_1BYTE_KIND,uint8_t* s8;s8=PyUnicode_1BYTE_DATA(o);res=bqn_makeC8Vec(l,s8);)
@@ -39,8 +37,8 @@ _ BQNV bqn_npy(K PO o) {
         R res;
     }
     NPA a=(NPA)o;
-    I t=PyArray_TYPE(a);
-    I rnk=PyArray_NDIM(a);
+    int t=PyArray_TYPE(a);
+    int rnk=PyArray_NDIM(a);
     S srnk=(S)rnk;
     npy_intp* dims=PyArray_DIMS(a);
     S* bqndims=malloc(sizeof(S)*rnk);
