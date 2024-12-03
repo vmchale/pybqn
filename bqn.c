@@ -4,7 +4,6 @@
 
 #define R return
 #define C(i,a) case i:{a;}break;
-#define BR break;
 #define Sw switch
 #define _ static inline
 #define K const
@@ -12,6 +11,7 @@
 typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;typedef long J;
 
 #define ERR(str) PyErr_SetString(PyExc_RuntimeError, str);
+#define D(str) default: ERR(str) break;
 #define DO(i,n,a) {int i;for(i=0;i<n;i++){a;}}
 
 _ BQNV bqn_npy(K PO o) {
@@ -31,8 +31,7 @@ _ BQNV bqn_npy(K PO o) {
             C(PyUnicode_1BYTE_KIND,uint8_t* s8;s8=PyUnicode_1BYTE_DATA(o);res=bqn_makeC8Vec(l,s8);)
             C(PyUnicode_2BYTE_KIND,uint16_t* s16;s16=PyUnicode_2BYTE_DATA(o);res=bqn_makeC16Vec(l,s16);)
             C(PyUnicode_4BYTE_KIND,uint32_t* s32;s32=PyUnicode_4BYTE_DATA(o);res=bqn_makeC32Vec(l,s32);)
-            default:
-                ERR("???") BR
+            D("???")
         };
         R res;
     }
@@ -50,7 +49,7 @@ _ BQNV bqn_npy(K PO o) {
         C(NPY_SHORT,res=bqn_makeI16Arr(srnk,bqndims,data))
         C(NPY_INT,res=bqn_makeI32Arr(srnk,bqndims,data))
         C(NPY_DOUBLE,res=bqn_makeF64Arr(srnk,bqndims,data))
-        default: ERR("Type not supported. 🤷")BR
+        D("Type not supported. 🤷")
     }
     free(bqndims);
     R res;
@@ -73,7 +72,7 @@ _ PO npy_bqn(K BQNV x) {
         C(elt_i16,int16_t* data16=malloc(n*2);bqn_readI16Arr(x,data16);res=PyArray_SimpleNewFromData(rnk,dims,NPY_INT16,data16))
         C(elt_i32,int32_t* data32=malloc(n*4);bqn_readI32Arr(x,data32);res=PyArray_SimpleNewFromData(rnk,dims,NPY_INT32,data32))
         C(elt_f64,F* datad=malloc(n*8);bqn_readF64Arr(x,datad);res=PyArray_SimpleNewFromData(rnk,dims,NPY_DOUBLE,datad))
-        default: ERR("Return type not supported.")BR
+        D("Return type not supported.")
     }
     free(dims);
     PyArray_ENABLEFLAGS((NPA)res,NPY_ARRAY_OWNDATA);
