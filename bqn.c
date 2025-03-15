@@ -9,19 +9,14 @@
 
 typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;typedef long J;
 
-#define ERR(str) PyErr_SetString(PyExc_RuntimeError, str);
-#define D(str) default: ERR(str) break;
-#define DO(i,n,a) {int i;for(i=0;i<n;i++){a;}}
+#define PyE(str) PyErr_SetString(PyExc_RuntimeError, str);
+#define D(str) default: PyE(str) break;
+#define IX(i,n,a) {int i;for(i=0;i<n;i++){a;}}
+#define $(p,a,b)if(p){a;}else{b;}
 
 _ BQNV bqn_npy(K PO o) {
-    if(PyFloat_Check(o)){
-        F x=PyFloat_AsDouble(o);
-        R bqn_makeF64(x);
-    }
-    if(PyLong_Check(o)){
-        ERR("Integer arguments are not supported.")
-        R 0;
-    }
+    $(PyFloat_Check(o),F x=PyFloat_AsDouble(o);R bqn_makeF64(x),);
+    $(PyLong_Check(o),PyE("Integer arguments are not supported.");R 0,);
     if(PyUnicode_Check(o)){
         S l=PyUnicode_GET_LENGTH(o);
         int k=PyUnicode_KIND(o);
@@ -40,7 +35,7 @@ _ BQNV bqn_npy(K PO o) {
     S srnk=(S)rnk;
     npy_intp* dims=PyArray_DIMS(a);
     S* bqndims=malloc(sizeof(S)*rnk);
-    DO(i,rnk,bqndims[i]=(S)dims[i]);free(dims);
+    IX(i,rnk,bqndims[i]=(S)dims[i]);free(dims);
     U data=PyArray_DATA(a);
     BQNV res;
     switch(t) {
@@ -62,7 +57,7 @@ _ PO npy_bqn(K BQNV x) {
     npy_intp* dims=malloc(sizeof(npy_intp)*rnk);
     S* bqndims=malloc(sizeof(S)*rnk);
     bqn_shape(x,bqndims);
-    DO(i,rnk,dims[i]=(npy_intp)bqndims[i]);free(bqndims);
+    IX(i,rnk,dims[i]=(npy_intp)bqndims[i]);free(bqndims);
     S n=bqn_bound(x);
     BQNElType t=bqn_directArrType(x);
     PO res;
@@ -82,11 +77,7 @@ static PO bqn_bqn(K PO self, K PO args) {
     const char* inp;PO arg0=NULL;PO arg1=NULL;
     PyArg_ParseTuple(args, "s|OO", &inp, &arg0, &arg1);
     BQNV f=bqn_evalCStr(inp);
-    if(arg0==NULL){
-        K PO res=npy_bqn(f);
-        bqn_free(f);
-        R res;
-    };
+    $(arg0==NULL,K PO res=npy_bqn(f);bqn_free(f);R res,);
     if(arg1==NULL){
         BQNV x0=bqn_npy(arg0);
         BQNV bqnres=bqn_call1(f,x0);
