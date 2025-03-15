@@ -4,7 +4,6 @@
 
 #define R return
 #define C(i,a) case i:{a;}break;
-#define Sw switch
 #define _ static inline
 #define K const
 
@@ -27,7 +26,7 @@ _ BQNV bqn_npy(K PO o) {
         S l=PyUnicode_GET_LENGTH(o);
         int k=PyUnicode_KIND(o);
         BQNV res;
-        Sw(k){
+        switch(k){
             C(PyUnicode_1BYTE_KIND,uint8_t* s8;s8=PyUnicode_1BYTE_DATA(o);res=bqn_makeC8Vec(l,s8);)
             C(PyUnicode_2BYTE_KIND,uint16_t* s16;s16=PyUnicode_2BYTE_DATA(o);res=bqn_makeC16Vec(l,s16);)
             C(PyUnicode_4BYTE_KIND,uint32_t* s32;s32=PyUnicode_4BYTE_DATA(o);res=bqn_makeC32Vec(l,s32);)
@@ -44,7 +43,7 @@ _ BQNV bqn_npy(K PO o) {
     DO(i,rnk,bqndims[i]=(S)dims[i]);free(dims);
     U data=PyArray_DATA(a);
     BQNV res;
-    Sw(t) {
+    switch(t) {
         C(NPY_BYTE,res=bqn_makeI8Arr(srnk,bqndims,data))
         C(NPY_SHORT,res=bqn_makeI16Arr(srnk,bqndims,data))
         C(NPY_INT,res=bqn_makeI32Arr(srnk,bqndims,data))
@@ -67,7 +66,7 @@ _ PO npy_bqn(K BQNV x) {
     S n=bqn_bound(x);
     BQNElType t=bqn_directArrType(x);
     PO res;
-    Sw(t) {
+    switch(t) {
         C(elt_i8,int8_t* data8=malloc(n);bqn_readI8Arr(x,data8);res=PyArray_SimpleNewFromData(rnk,dims,NPY_INT8,data8);)
         C(elt_i16,int16_t* data16=malloc(n*2);bqn_readI16Arr(x,data16);res=PyArray_SimpleNewFromData(rnk,dims,NPY_INT16,data16))
         C(elt_i32,int32_t* data32=malloc(n*4);bqn_readI32Arr(x,data32);res=PyArray_SimpleNewFromData(rnk,dims,NPY_INT32,data32))
