@@ -7,7 +7,7 @@
 #define _ static inline
 #define K const
 
-typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;typedef long J;
+typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;
 
 #define PyE(str) PyErr_SetString(PyExc_RuntimeError, str);
 #define D(str) default: PyE(str) break;
