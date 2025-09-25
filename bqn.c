@@ -9,14 +9,14 @@
 
 typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;
 
-#define PyE(str) PyErr_SetString(PyExc_RuntimeError, str);
-#define D(str) default: PyE(str) break;
+#define PyE(str) PyErr_SetString(PyExc_RuntimeError, str);R 0;
+#define D(str) default: PyE(str);
 #define IX(i,n,a) {int i;for(i=0;i<n;i++){a;}}
 #define $(p,a,b)if(p){a;}else{b;}
 
 _ BQNV bqn_npy(K PO o) {
     $(PyFloat_Check(o),F x=PyFloat_AsDouble(o);R bqn_makeF64(x),);
-    $(PyLong_Check(o),PyE("Integer arguments are not supported.");R 0,);
+    $(PyLong_Check(o),PyE("Integer arguments are not supported."),);
     if(PyUnicode_Check(o)){
         S l=PyUnicode_GET_LENGTH(o);
         int k=PyUnicode_KIND(o);
