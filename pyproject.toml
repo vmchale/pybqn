@@ -9,7 +9,7 @@ name = "pybqn"
 version = "0.1.1"
 authors = [{ name = "Vanessa McHale", email = "vamchale@gmail.com" }]
 readme = "README.md"
-license = {file = "LICENSE"}
+license-files = ["LICENSE"]
 dependencies = ["numpy>=2.0"]
 
 [project.urls]
