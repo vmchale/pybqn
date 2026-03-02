@@ -11,7 +11,7 @@ typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F
 
 #define PyE(str) PyErr_SetString(PyExc_RuntimeError, str);R 0;
 #define D(str) default: PyE(str);
-#define IX(i,n,a) {int i;for(i=0;i<n;i++){a;}}
+#define iX(n,a) {for(S i=0;i<n;i++){a;}}
 #define $(p,a,b)if(p){a;}else{b;}
 
 _ BQNV bqn_npy(K PO o) {
@@ -35,7 +35,7 @@ _ BQNV bqn_npy(K PO o) {
     S srnk=(S)rnk;
     npy_intp* dims=PyArray_DIMS(a);
     S* bqndims=malloc(sizeof(S)*rnk);
-    IX(i,rnk,bqndims[i]=(S)dims[i]);free(dims);
+    iX(srnk,bqndims[i]=(S)dims[i]);free(dims);
     U data=PyArray_DATA(a);
     BQNV res;
     switch(t) {
@@ -57,7 +57,7 @@ _ PO npy_bqn(K BQNV x) {
     npy_intp* dims=malloc(sizeof(npy_intp)*rnk);
     S* bqndims=malloc(sizeof(S)*rnk);
     bqn_shape(x,bqndims);
-    IX(i,rnk,dims[i]=(npy_intp)bqndims[i]);free(bqndims);
+    iX(rnk,dims[i]=(npy_intp)bqndims[i]);free(bqndims);
     S n=bqn_bound(x);
     BQNElType t=bqn_directArrType(x);
     PO res;
