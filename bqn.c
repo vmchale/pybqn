@@ -2,19 +2,19 @@
 #include<numpy/arrayobject.h>
 #include<bqnffi.h>
 
-#define R return
+#define _(z) return(z);
 #define C(i,a) case i:{a;}break;
-#define _ static inline
+#define K static inline
 
 typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;
 
-#define PyE(str) PyErr_SetString(PyExc_RuntimeError, str);R 0;
+#define PyE(str) PyErr_SetString(PyExc_RuntimeError, str);_(0)
 #define D(str) default: PyE(str);
 #define iX(n,a) {for(S i=0;i<n;i++){a;}}
 #define $(p,a,b)if(p){a;}else{b;}
 
-_ BQNV bqn_npy(PO o) {
-    $(PyFloat_Check(o),F x=PyFloat_AsDouble(o);R bqn_makeF64(x),);
+K BQNV bqn_npy(PO o) {
+    $(PyFloat_Check(o),F x=PyFloat_AsDouble(o);_(bqn_makeF64(x)),);
     $(PyLong_Check(o),PyE("Integer arguments are not supported."),);
     if(PyUnicode_Check(o)){
         S l=PyUnicode_GET_LENGTH(o);
@@ -26,7 +26,7 @@ _ BQNV bqn_npy(PO o) {
             C(PyUnicode_4BYTE_KIND,uint32_t* s32;s32=PyUnicode_4BYTE_DATA(o);res=bqn_makeC32Vec(l,s32);)
             D("???")
         };
-        R res;
+        _(res)
     }
     NPA a=(NPA)o;
     int t=PyArray_TYPE(a);
@@ -45,13 +45,11 @@ _ BQNV bqn_npy(PO o) {
         D("Type not supported. 🤷")
     }
     free(bqndims);
-    R res;
+    _(res)
 }
 
-_ PO npy_bqn(BQNV x) {
-    if(bqn_type(x)==1){
-        R PyFloat_FromDouble(bqn_toF64(x));
-    }
+K PO npy_bqn(BQNV x) {
+    $(bqn_type(x)==1,_(PyFloat_FromDouble(bqn_toF64(x))),)
     S rnk=bqn_rank(x);
     npy_intp* dims=malloc(sizeof(npy_intp)*rnk);
     S* bqndims=malloc(sizeof(S)*rnk);
@@ -69,20 +67,20 @@ _ PO npy_bqn(BQNV x) {
     }
     free(dims);
     PyArray_ENABLEFLAGS((NPA)res,NPY_ARRAY_OWNDATA);
-    R res;
+    _(res)
 }
 
 static PO bqn_bqn(PO self, PO args) {
     const char* inp;PO arg0=NULL;PO arg1=NULL;
     PyArg_ParseTuple(args, "s|OO", &inp, &arg0, &arg1);
     BQNV f=bqn_evalCStr(inp);
-    $(arg0==NULL,PO res=npy_bqn(f);bqn_free(f);R res,);
+    $(arg0==NULL,PO res=npy_bqn(f);bqn_free(f);_(res),);
     BQNV bqnres;
     BQNV x0=bqn_npy(arg0);
     $(arg1==NULL,bqnres=bqn_call1(f,x0),BQNV x1=bqn_npy(arg1);bqnres=bqn_call2(f,x0,x1);bqn_free(x1);)
     PO res=npy_bqn(bqnres);
     bqn_free(x0);bqn_free(bqnres);bqn_free(f);
-    R res;
+    _(res)
 }
 
 static PyMethodDef BqnMethods[] = {
@@ -92,4 +90,4 @@ static PyMethodDef BqnMethods[] = {
 
 static struct PyModuleDef bqnmodule = {PyModuleDef_HEAD_INIT, "bqn", NULL, -1, BqnMethods};
 
-PyMODINIT_FUNC PyInit_bqn(void) {bqn_init(); import_array(); R PyModule_Create(&bqnmodule);}
+PyMODINIT_FUNC PyInit_bqn(void) {bqn_init(); import_array(); _(PyModule_Create(&bqnmodule))}
