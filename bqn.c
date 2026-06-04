@@ -73,26 +73,17 @@ _ PO npy_bqn(K BQNV x) {
     R res;
 }
 
-static PO bqn_bqn(K PO self, K PO args) {
+static PO bqn_bqn(PO self, PO args) {
     const char* inp;PO arg0=NULL;PO arg1=NULL;
     PyArg_ParseTuple(args, "s|OO", &inp, &arg0, &arg1);
     BQNV f=bqn_evalCStr(inp);
-    $(arg0==NULL,K PO res=npy_bqn(f);bqn_free(f);R res,);
-    if(arg1==NULL){
-        BQNV x0=bqn_npy(arg0);
-        BQNV bqnres=bqn_call1(f,x0);
-        K PO res=npy_bqn(bqnres);
-        bqn_free(x0);bqn_free(bqnres);bqn_free(f);
-        R res;
-    }
-    else{
-        BQNV x0=bqn_npy(arg0);
-        BQNV x1=bqn_npy(arg1);
-        BQNV bqnres=bqn_call2(f,x0,x1);
-        K PO res=npy_bqn(bqnres);
-        bqn_free(x0);bqn_free(x1);bqn_free(bqnres);bqn_free(f);
-        R res;
-    }
+    $(arg0==NULL,PO res=npy_bqn(f);bqn_free(f);R res,);
+    BQNV bqnres;
+    BQNV x0=bqn_npy(arg0);
+    $(arg1==NULL,bqnres=bqn_call1(f,x0),BQNV x1=bqn_npy(arg1);bqnres=bqn_call2(f,x0,x1);bqn_free(x1);)
+    PO res=npy_bqn(bqnres);
+    bqn_free(x0);bqn_free(bqnres);bqn_free(f);
+    R res;
 }
 
 static PyMethodDef BqnMethods[] = {
