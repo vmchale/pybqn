@@ -5,7 +5,6 @@
 #define R return
 #define C(i,a) case i:{a;}break;
 #define _ static inline
-#define K const
 
 typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F;typedef size_t S;
 
@@ -14,7 +13,7 @@ typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F
 #define iX(n,a) {for(S i=0;i<n;i++){a;}}
 #define $(p,a,b)if(p){a;}else{b;}
 
-_ BQNV bqn_npy(K PO o) {
+_ BQNV bqn_npy(PO o) {
     $(PyFloat_Check(o),F x=PyFloat_AsDouble(o);R bqn_makeF64(x),);
     $(PyLong_Check(o),PyE("Integer arguments are not supported."),);
     if(PyUnicode_Check(o)){
@@ -49,7 +48,7 @@ _ BQNV bqn_npy(K PO o) {
     R res;
 }
 
-_ PO npy_bqn(K BQNV x) {
+_ PO npy_bqn(BQNV x) {
     if(bqn_type(x)==1){
         R PyFloat_FromDouble(bqn_toF64(x));
     }
