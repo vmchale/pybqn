@@ -10,7 +10,7 @@ typedef PyArrayObject* NPA;typedef PyObject* PO;typedef void* U;typedef double F
 
 #define PyE(str) PyErr_SetString(PyExc_RuntimeError, str);_(0)
 #define D(str) default: PyE(str);
-#define iX(n,a) {for(S i=0;i<n;i++){a;}}
+#define iX(n,a) for(S i=0;i<n;i++)a;
 #define $(p,a,b)if(p){a;}else{b;}
 
 K BQNV bqn_npy(PO o) {
